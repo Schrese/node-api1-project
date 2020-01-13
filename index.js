@@ -8,7 +8,7 @@ const server = express();
 server.use(express.json());
 
 //GET users (find())
-server.get('/', (req, res) => {
+server.get('/api/users', (req, res) => {
     Users.find()
         .then(users => {
             res.status(200).json(users)
@@ -20,6 +20,20 @@ server.get('/', (req, res) => {
 })
 
 //GET users by id (findById())
+server.get('/api/users/:id', (req, res) => {
+    const id = req.params.id;
+    Users.findById(id)
+        .then(user => {
+            if (user === undefined) {
+                res.status(404).json({message: 'The user with the specified ID does not exist.'})
+            } else {
+                res.status(200).json({user})
+            }
+        })
+        .catch(err => {
+            res.status(500).json({errorMessage: 'The user information could not be retrieved.'})
+        })
+})
 
 //POST new user (insert())
 
