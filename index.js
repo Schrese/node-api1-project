@@ -39,12 +39,12 @@ server.get('/api/users/:id', (req, res) => {
 //POST new user (insert())
 server.post('/api/users', function(req, res) { 
     const userData = req.body;
-    if(userData.name === null || userData.bio === null) {
+    if(!userData.name || !userData.bio) {
         res.status(400).json({errorMessage: 'Please provide name and bio for the user.'})
     } else {
         Users.insert(userData)
         .then(newUser => {
-            res.status(201).json(userData)
+            res.status(201).json(newUser)
         })
         .catch(err => {
             console.log('error creating user', error)
@@ -55,6 +55,35 @@ server.post('/api/users', function(req, res) {
 })
 
 //PUT existing user by id (update())
+server.put('/api/users/:id', (req, res) => {
+    const id = req.params.id;
+    const upData = req.body;
+
+    if(!upData.name || !upData.bio) {
+        res.status(400).json({errorMessage: 'Please provide name and bio for the user.'})
+    } else {
+        Users.update(id, upData)
+            .then(user => {
+                if (user) {
+                    Users.findById(id)
+                        .then(user => {
+                            res.status(200).json(user)
+                        })
+                        .catch(err => {
+                            console.log('error getting this user', err)
+                            res.status(500).json({errorMessage: 'Could not find that user'})
+                        })
+                } else {
+                    res.status(404).json({errorMessage: 'The user with the specified ID does not exist.'})
+                }
+            })
+            .catch(err => {
+                console.log('error in editing the user')
+                res.status(500).json({errorMessage: 'The user information could not be modified.'})
+            })
+    }
+    
+})
 
 //Delete user by id (remove())
 
