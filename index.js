@@ -1,11 +1,14 @@
 // implement your API here
+require('dontenv').config();
 const express = require('express');
+const cors = require('cors');
 
 const Users = require('./data/db.js')
 
 const server = express();
 
 server.use(express.json());
+server.use(cors());
 
 //GET users (find())
 server.get('/api/users', (req, res) => {
@@ -111,5 +114,5 @@ server.delete('/api/users/:id', (req, res) => {
     })
 
 
-const port = 8000;
-server.listen(port, () => console.log('\n ** api on port : ${port} \n'))
+const port = process.env.PORT;
+server.listen(port, () => console.log(`\n ** api on port : ${port} \n`))
